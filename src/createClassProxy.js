@@ -1,6 +1,7 @@
 import createPrototypeProxy from './createPrototypeProxy';
 import bindAutoBindMethods from './bindAutoBindMethods';
 import deleteUnknownAutoBindMethods from './deleteUnknownAutoBindMethods';
+import supportsProtoAssignment from './supportsProtoAssignment';
 
 const RESERVED_STATICS = [
   'length',
@@ -168,4 +169,21 @@ export default function proxyClass(InitialClass) {
   });
 
   return proxy;
+}
+
+function createFallback(Component) {
+  let CurrentComponent = Component;
+
+  return {
+    get() {
+      return CurrentComponent;
+    },
+    update(NextComponent) {
+      CurrentComponent = NextComponent;
+    }
+  };
+}
+
+export default function createClassProxy(Component) {
+  return supportsProtoAssignment(Component) ? proxyClass(Component) : createFallback(Component);
 }
