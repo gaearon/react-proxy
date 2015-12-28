@@ -9,5 +9,6 @@ if (!supportsProtoAssignment()) {
   );
 }
 
-export { default as createProxy } from './createClassProxy';
-export { default as getForceUpdate } from 'react-deep-force-update';
+import createProxy from './createClassProxy';
+import getForceUpdate from 'react-deep-force-update';
+export { createProxy, getForceUpdate };
