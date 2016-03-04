@@ -66,7 +66,7 @@ export default function proxyClass(InitialClass) {
   try {
     // Create a proxy constructor with matching name
     ProxyClass = new Function('factory', 'instantiate',
-      `return function ${InitialComponent.name || 'ProxyClass'}() {
+      `return function ${InitialClass.name || 'ProxyClass'}() {
          return instantiate(factory, this, arguments);
       }`
     )(() => CurrentClass, instantiate);
