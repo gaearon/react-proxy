@@ -59,8 +59,8 @@
     "babel-plugin-transform-react-jsx": "^6.4.0",
     "expect": "^1.9.0",
     "mocha": "^2.2.4",
-    "react": "^0.14.0",
-    "react-addons-test-utils": "^0.14.0",
+    "react": "^0.15.0-alpha.1",
+    "react-addons-test-utils": "^0.15.0-alpha.1",
     "rimraf": "^2.4.2",
     "webpack": "1.4.8"
   },

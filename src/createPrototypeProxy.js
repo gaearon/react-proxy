@@ -107,6 +107,25 @@ export default function createPrototypeProxy() {
   }
 
   /**
+   * Creates an auto-bind map mimicking the original map, but directed at proxy.
+   */
+  function createAutoBindPairs() {
+    let __reactAutoBindPairs = [];
+
+
+    for (let i = 0; i < current.__reactAutoBindPairs.length; i += 2) {
+      const name = current.__reactAutoBindPairs[i];
+      const value = current.__reactAutoBindPairs[i + 1];
+
+      if (typeof proxy[name] === 'function') {
+        __reactAutoBindPairs.push(name, value);
+      }
+    }
+
+    return __reactAutoBindPairs;
+  }
+
+  /**
    * Applies the updated prototype.
    */
   function update(next) {
@@ -138,7 +157,14 @@ export default function createPrototypeProxy() {
     // Track mounting and unmounting
     defineProxyPropertyWithValue('componentDidMount', proxiedComponentDidMount);
     defineProxyPropertyWithValue('componentWillUnmount', proxiedComponentWillUnmount);
-    defineProxyPropertyWithValue('__reactAutoBindMap', createAutoBindMap());
+
+    if (current.hasOwnProperty('__reactAutoBindMap')) {
+      defineProxyPropertyWithValue('__reactAutoBindMap', createAutoBindMap());
+    }
+
+    if (current.hasOwnProperty('__reactAutoBindPairs')) {
+      defineProxyPropertyWithValue('__reactAutoBindPairs', createAutoBindPairs());
+    }
 
     // Set up the prototype chain
     proxy.__proto__ = next;

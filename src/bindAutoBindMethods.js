@@ -47,6 +47,7 @@ function bindAutoBindMethod(component, method) {
   return boundMethod;
 }
 
+/*
 export default function bindAutoBindMethods(component) {
   for (var autoBindKey in component.__reactAutoBindMap) {
     if (!component.__reactAutoBindMap.hasOwnProperty(autoBindKey)) {
@@ -67,3 +68,16 @@ export default function bindAutoBindMethods(component) {
     component[autoBindKey] = bindAutoBindMethod(component, method);
   }
 };
+*/
+
+export default function bindAutoBindMethods(component) {
+  var pairs = component.__reactAutoBindPairs;
+  for (var i = 0; i < pairs.length; i += 2) {
+    var autoBindKey = pairs[i];
+    var method = pairs[i + 1];
+    component[autoBindKey] = bindAutoBindMethod(
+      component,
+      method
+    );
+  }
+}
