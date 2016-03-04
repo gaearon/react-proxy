@@ -4,12 +4,13 @@
   "description": "Proxies React components without unmounting or losing their state.",
   "main": "modules/index.js",
   "scripts": {
-    "build": "rimraf modules dist && webpack && babel src --out-dir modules",
-    "test": "mocha --compilers js:babel-core/register --recursive ./test",
-    "test:harmony": "NODE_ENV=harmony npm run test",
-    "test:harmony:watch": "NODE_ENV=harmony npm run test -- --watch",
-    "test:watch": "npm run test -- --watch",
-    "prepublish": "npm run build && npm test && npm run test:harmony"
+    "build": "rimraf modules dist && NODE_ENV=babel-es2015 webpack && NODE_ENV=babel-es2015 babel src --out-dir modules",
+    "test": "npm run test:babel-es2015 && npm run test:native-es2015",
+    "test:babel-es2015": "NODE_ENV=babel-es2015 mocha --compilers js:babel-core/register --recursive ./test",
+    "test:native-es2015": "NODE_ENV=native-es2015 mocha --compilers js:babel-core/register --recursive ./test",
+    "test:native-es2015:watch": "npm run test:native-es2015 -- --watch",
+    "test:watch": "npm run test:babel-es2015 -- --watch",
+    "prepublish": "npm run build && npm test"
   },
   "files": [
     "dist",
