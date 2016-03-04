@@ -36,6 +36,7 @@ export default function proxyClass(InitialClass) {
 
   const prototypeProxy = createPrototypeProxy();
   let CurrentClass;
+  let ProxyClass;
 
   let staticDescriptors = {};
   function wasStaticModifiedByUser(key) {
