@@ -94,11 +94,12 @@ ReactShallowRenderer.prototype._render = function(element, transaction, context)
   }
 
   if (!this._instance) {
-    var rootID = ReactInstanceHandles.createReactRootID();
+    var rootID = ReactInstanceHandles.createReactRootID(0);
     var instance = new ShallowComponentWrapper(element.type);
     instance.construct(element);
 
-    instance.mountComponent(rootID, transaction, context);
+    //instance.mountComponent(rootID, transaction, context);
+    instance.mountComponent(transaction, null, null, context);
 
     if (this._callComponentDidMount) {
       var component = instance.getPublicInstance();

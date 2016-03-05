@@ -112,13 +112,12 @@ export default function createPrototypeProxy() {
   function createAutoBindPairs() {
     let __reactAutoBindPairs = [];
 
-
     for (let i = 0; i < current.__reactAutoBindPairs.length; i += 2) {
       const name = current.__reactAutoBindPairs[i];
-      const value = current.__reactAutoBindPairs[i + 1];
+      const method = proxy[name];
 
-      if (typeof proxy[name] === 'function') {
-        __reactAutoBindPairs.push(name, value);
+      if (typeof method === 'function') {
+        __reactAutoBindPairs.push(name, method);
       }
     }
 
