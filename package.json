@@ -1,6 +1,6 @@
 {
   "name": "react-proxy",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Proxies React components without unmounting or losing their state.",
   "main": "modules/index.js",
   "scripts": {
