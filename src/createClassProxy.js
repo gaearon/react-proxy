@@ -6,6 +6,7 @@ import supportsProtoAssignment from './supportsProtoAssignment';
 
 const RESERVED_STATICS = [
   'length',
+  'displayName',
   'name',
   'arguments',
   'caller',
@@ -26,6 +27,13 @@ function isEqualDescriptor(a, b) {
     }
   }
   return true;
+}
+
+function getDisplayName(Component) {
+  const displayName = Component.displayName || Component.name;
+  return (displayName && displayName !== 'ReactComponent') ?
+    displayName :
+    'Unknown';
 }
 
 // This was originally a WeakMap but we had issues with React Native:
@@ -49,13 +57,7 @@ function proxyClass(InitialComponent) {
 
   let CurrentComponent;
   let ProxyComponent;
-
-  let staticDescriptors = {};
-  function wasStaticModifiedByUser(key) {
-    // Compare the descriptor with the one we previously set ourselves.
-    const currentDescriptor = Object.getOwnPropertyDescriptor(ProxyComponent, key);
-    return !isEqualDescriptor(staticDescriptors[key], currentDescriptor);
-  }
+  let savedDescriptors = {};
 
   function instantiate(factory, context, params) {
     const component = factory();
@@ -63,9 +65,7 @@ function proxyClass(InitialComponent) {
     try {
       return component.apply(context, params);
     } catch (err) {
-      // Native ES6 class instantiation
       const instance = new component(...params);
-
       Object.keys(instance).forEach(key => {
         if (RESERVED_STATICS.indexOf(key) > -1) {
           return;
@@ -75,10 +75,11 @@ function proxyClass(InitialComponent) {
     }
   }
 
+  let displayName = getDisplayName(InitialComponent);
   try {
     // Create a proxy constructor with matching name
     ProxyComponent = new Function('factory', 'instantiate',
-      `return function ${InitialComponent.name || 'ProxyComponent'}() {
+      `return function ${displayName}() {
          return instantiate(factory, this, arguments);
       }`
     )(() => CurrentComponent, instantiate);
@@ -88,6 +89,11 @@ function proxyClass(InitialComponent) {
       return instantiate(() => CurrentComponent, this, arguments);
     };
   }
+  try {
+    Object.defineProperty(ProxyComponent, 'name', {
+      value: displayName
+    });
+  } catch (err) { }
 
   // Proxy toString() to the current constructor
   ProxyComponent.toString = function toString() {
@@ -105,6 +111,9 @@ function proxyClass(InitialComponent) {
     if (typeof NextComponent !== 'function') {
       throw new Error('Expected a constructor.');
     }
+    if (NextComponent === CurrentComponent) {
+      return;
+    }
 
     // Prevent proxy cycles
     var existingProxy = findProxy(NextComponent);
@@ -113,54 +122,90 @@ function proxyClass(InitialComponent) {
     }
 
     // Save the next constructor so we call it
+    const PreviousComponent = CurrentComponent;
     CurrentComponent = NextComponent;
 
     // Try to infer displayName
-    ProxyComponent.displayName = NextComponent.displayName || NextComponent.name;
+    displayName = getDisplayName(NextComponent);
+    ProxyComponent.displayName = displayName;
+    try {
+      Object.defineProperty(ProxyComponent, 'name', {
+        value: displayName
+      });
+    } catch (err) { }
 
     // Set up the same prototype for inherited statics
     ProxyComponent.__proto__ = NextComponent.__proto__;
 
-    // Copy static methods and properties
+    // Copy over static methods and properties added at runtime
+    if (PreviousComponent) {
+      Object.getOwnPropertyNames(PreviousComponent).forEach(key => {
+        if (RESERVED_STATICS.indexOf(key) > -1) {
+          return;
+        }
+
+        const prevDescriptor = Object.getOwnPropertyDescriptor(PreviousComponent, key);
+        const savedDescriptor = savedDescriptors[key];
+
+        if (!isEqualDescriptor(prevDescriptor, savedDescriptor)) {
+          Object.defineProperty(NextComponent, key, prevDescriptor);
+        }
+      });
+    }
+
+    // Copy newly defined static methods and properties
     Object.getOwnPropertyNames(NextComponent).forEach(key => {
       if (RESERVED_STATICS.indexOf(key) > -1) {
         return;
       }
 
-      const staticDescriptor = {
+      const prevDescriptor = PreviousComponent && Object.getOwnPropertyDescriptor(PreviousComponent, key);
+      const savedDescriptor = savedDescriptors[key];
+
+      // Skip redefined descriptors
+      if (prevDescriptor && savedDescriptor && !isEqualDescriptor(savedDescriptor, prevDescriptor)) {
+        Object.defineProperty(NextComponent, key, prevDescriptor);
+        Object.defineProperty(ProxyComponent, key, prevDescriptor);
+        return;
+      }
+
+      if (prevDescriptor && !savedDescriptor) {
+        Object.defineProperty(ProxyComponent, key, prevDescriptor);
+        return;
+      }
+
+      const nextDescriptor = {
         ...Object.getOwnPropertyDescriptor(NextComponent, key),
         configurable: true
       };
-
-      // Copy static unless user has redefined it at runtime
-      if (!wasStaticModifiedByUser(key)) {
-        Object.defineProperty(ProxyComponent, key, staticDescriptor);
-        staticDescriptors[key] = staticDescriptor;
-      }
+      savedDescriptors[key] = nextDescriptor;
+      Object.defineProperty(ProxyComponent, key, nextDescriptor);
     });
 
-    // Remove old static methods and properties
+    // Remove static methods and properties that are no longer defined
     Object.getOwnPropertyNames(ProxyComponent).forEach(key => {
       if (RESERVED_STATICS.indexOf(key) > -1) {
         return;
       }
-
       // Skip statics that exist on the next class
       if (NextComponent.hasOwnProperty(key)) {
         return;
       }
-
       // Skip non-configurable statics
-      const descriptor = Object.getOwnPropertyDescriptor(ProxyComponent, key);
-      if (descriptor && !descriptor.configurable) {
+      const proxyDescriptor = Object.getOwnPropertyDescriptor(ProxyComponent, key);
+      if (proxyDescriptor && !proxyDescriptor.configurable) {
         return;
       }
 
-      // Delete static unless user has redefined it at runtime
-      if (!wasStaticModifiedByUser(key)) {
-        delete ProxyComponent[key];
-        delete staticDescriptors[key];
+      const prevDescriptor = PreviousComponent && Object.getOwnPropertyDescriptor(PreviousComponent, key);
+      const savedDescriptor = savedDescriptors[key];
+
+      // Skip redefined descriptors
+      if (prevDescriptor && savedDescriptor && !isEqualDescriptor(savedDescriptor, prevDescriptor)) {
+        return;
       }
+
+      delete ProxyComponent[key];
     });
 
     if (prototypeProxy) {
@@ -168,7 +213,7 @@ function proxyClass(InitialComponent) {
       const mountedInstances = prototypeProxy.update(NextComponent.prototype);
 
       // Set up the constructor property so accessing the statics work
-      ProxyComponent.prototype.constructor = ProxyComponent;
+      ProxyComponent.prototype.constructor = NextComponent;
 
       // We might have added new methods that need to be auto-bound
       mountedInstances.forEach(bindAutoBindMethods);

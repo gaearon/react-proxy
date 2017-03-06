@@ -3,21 +3,35 @@ import createShallowRenderer from './helpers/createShallowRenderer';
 import expect from 'expect';
 import createProxy from '../src';
 
-const fixtures = {
-  pure: {
-    Bar(props) {
-      return <div {...props}>Bar</div>;
-    },
-
-    Baz(props) {
-      return <div {...props}>Baz</div>;
-    },
-
-    Foo(props) {
-      return <div {...props}>Foo</div>;
-    }
+function createPureFixtures() {
+  function Bar(props) {
+    return <div {...props}>Bar</div>;
   }
-};
+
+  function Baz(props) {
+    return <div {...props}>Baz</div>;
+  }
+
+  function Foo(props) {
+    return <div {...props}>Foo</div>;
+  }
+
+  function Qux() {
+    throw new Error('Oops.');
+  }
+
+  const Quy = () => {
+    throw new Error('Ouch.');
+  }
+
+  return {
+    Bar,
+    Baz,
+    Foo,
+    Qux,
+    Quy
+  };
+}
 
 describe('pure component', () => {
   let renderer;
@@ -33,24 +47,45 @@ describe('pure component', () => {
     expect(warnSpy.calls.length).toBe(0);
   });
 
-  Object.keys(fixtures).forEach(type => {
-    describe(type, () => {
-      const { Bar, Baz, Foo } = fixtures[type];
+  describe('pure', () => {
+    let Bar;
+    let Baz;
+    let Foo;
+    let Qux;
+    let Quy;
 
-      it('gets replaced', () => {
-        const proxy = createProxy(Bar);
-        const Proxy = proxy.get();
-        const instance = renderer.render(<Proxy />);
-        expect(renderer.getRenderOutput().props.children).toEqual('Bar');
+    beforeEach(() => {
+      ({
+        Bar,
+        Baz,
+        Foo,
+        Qux,
+        Quy
+      } = createPureFixtures());
+    });
 
-        proxy.update(Baz);
-        renderer.render(<Proxy />);
-        expect(renderer.getRenderOutput().props.children).toEqual('Baz');
+    it('gets replaced', () => {
+      const proxy = createProxy(Bar);
+      const Proxy = proxy.get();
+      const instance = renderer.render(<Proxy />);
+      expect(renderer.getRenderOutput().props.children).toEqual('Bar');
 
-        proxy.update(Foo);
-        renderer.render(<Proxy />);
-        expect(renderer.getRenderOutput().props.children).toEqual('Foo');
-      });
+      proxy.update(Baz);
+      renderer.render(<Proxy />);
+      expect(renderer.getRenderOutput().props.children).toEqual('Baz');
+
+      proxy.update(Foo);
+      renderer.render(<Proxy />);
+      expect(renderer.getRenderOutput().props.children).toEqual('Foo');
+    });
+
+    it('does not swallow errors', () => {
+      const proxy = createProxy(Qux);
+      const Proxy = proxy.get();
+      expect(() => renderer.render(<Proxy />)).toThrow('Oops.');
+
+      proxy.update(Quy);
+      expect(() => renderer.render(<Proxy />)).toThrow('Ouch.');
     });
   });
 });
