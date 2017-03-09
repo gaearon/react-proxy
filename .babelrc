@@ -14,12 +14,6 @@
         "transform-decorators-legacy",
         "transform-object-rest-spread",
         "transform-class-properties",
-        "transform-es2015-literals",
-        "transform-es2015-shorthand-properties",
-        "check-es2015-constants",
-        "transform-es2015-spread",
-        "transform-es2015-parameters",
-        "transform-es2015-destructuring",
         "transform-es2015-modules-commonjs"
       ]
     }

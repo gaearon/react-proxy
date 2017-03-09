@@ -211,6 +211,7 @@ describe('consistency', () => {
     it('sets up name and displayName from displayName or name', () => {
       let proxy = createProxy(Bar);
       const Proxy = proxy.get();
+
       expect(Proxy.name).toEqual('Bar');
       expect(Proxy.displayName).toEqual('Bar');
 
