@@ -31,7 +31,7 @@ function isEqualDescriptor(a, b) {
 
 function getDisplayName(Component) {
   const displayName = Component.displayName || Component.name;
-  return (displayName && displayName !== 'ReactComponent') ?
+  return (displayName && displayName !== 'ReactComponent' && displayName !== 'Constructor') ?
     displayName :
     'Unknown';
 }
