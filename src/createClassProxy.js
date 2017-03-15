@@ -50,11 +50,13 @@ function addProxy(Component, proxy) {
 }
 
 function proxyClass(Component) {
+  let newComponent = null
   let newComponentInstance = null
   let proxyInstance = null
   let proxy = new Proxy(Component, {
 
     construct(target, argumentsList, newTarget) {
+
       const obj = Reflect.construct(Component, argumentsList);
 
       const tempInstance = new Proxy(obj, {
@@ -64,7 +66,6 @@ function proxyClass(Component) {
             'updater',
             'state',
             'setState',
-            'constructor',
             '_reactInternalInstance',
             'context',
             'getChildContext'
@@ -107,6 +108,13 @@ function proxyClass(Component) {
       proxyInstance = tempInstance
 
       return tempInstance;
+    },
+    get(target, propKey, receiver) {
+      // if (newComponent && newComponent !== proxy) // prevents proxy cycle, but not mutal proxy cycles...
+      if (newComponent) {
+        return Reflect.get(newComponent, propKey, receiver);
+      }
+      return Reflect.get(target, propKey, receiver);
     }
   });
 
@@ -115,6 +123,7 @@ function proxyClass(Component) {
       return proxy;
     },
     update(NewComponent) {
+      newComponent = NewComponent
       newComponentInstance = mount(<NewComponent />).get(0)
       if (proxyInstance && proxyInstance.state) {
         newComponentInstance.setState(proxyInstance.state)
