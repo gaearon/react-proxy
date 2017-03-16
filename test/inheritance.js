@@ -14,7 +14,7 @@ function createModernFixtures() {
     }
 
     render() {
-      return this.actuallyRender();
+      return <div>Base1</div>;
     }
   }
 
@@ -28,7 +28,7 @@ function createModernFixtures() {
     }
 
     render() {
-      return this.actuallyRender();
+      return <div>Base2</div>;
     }
   }
 
@@ -56,8 +56,14 @@ describe('inheritance', () => {
       const baseProxy = createProxy(Base1);
       const BaseProxy = baseProxy.get();
 
+      class Derived1 extends Base1 {
+        render() {
+          return <span>{super.getX() * 10}</span>;
+        }
+      }
+
       class Derived extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 10}</span>;
         }
       }
@@ -78,7 +84,7 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Derived extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 10}</span>;
         }
       }
@@ -99,7 +105,7 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Derived extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 10}</span>;
         }
       }
@@ -117,7 +123,7 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Derived extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 10}</span>;
         }
       }
@@ -135,13 +141,13 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Derived1 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 10}</span>;
         }
       }
 
       class Derived2 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 100}</span>;
         }
       }
@@ -162,13 +168,13 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Derived1 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 10}</span>;
         }
       }
 
       class Derived2 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 100}</span>;
         }
       }
@@ -186,13 +192,13 @@ describe('inheritance', () => {
 
     it('replaces a derived instance method with proxied derived only', () => {
       class Derived1 extends Base1 {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 10}</span>;
         }
       }
 
       class Derived2 extends Base1 {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 100}</span>;
         }
       }
@@ -210,13 +216,13 @@ describe('inheritance', () => {
 
     it('replaces a derived static method with proxied derived only', () => {
       class Derived1 extends Base1 {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 10}</span>;
         }
       }
 
       class Derived2 extends Base1 {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 100}</span>;
         }
       }
@@ -237,13 +243,13 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Middle1 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 10}</span>;
         }
       }
 
       class Middle2 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{super.getX() * 100}</span>;
         }
       }
@@ -299,13 +305,13 @@ describe('inheritance', () => {
       const BaseProxy = baseProxy.get();
 
       class Middle1 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 10}</span>;
         }
       }
 
       class Middle2 extends BaseProxy {
-        actuallyRender() {
+        render() {
           return <span>{this.constructor.getY() * 100}</span>;
         }
       }
