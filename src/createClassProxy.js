@@ -50,10 +50,17 @@ function addProxy(Component, proxy) {
 }
 
 function proxyClass(Component) {
+  // Prevent double wrapping
+  // Given a proxy class, return the existing proxy managing it
+  const existingProxy = findProxy(Component);
+  if (existingProxy) {
+    return existingProxy;
+  }
+
   let newComponent = null
   let newComponentInstance = null
   let proxyInstance = null
-  let proxy = new Proxy(Component, {
+  let ProxyComponent = new Proxy(Component, {
 
     construct(target, argumentsList, newTarget) {
 
@@ -118,18 +125,30 @@ function proxyClass(Component) {
     }
   });
 
-  return {
+  const proxy = {
     get() {
-      return proxy;
+      return ProxyComponent;
     },
     update(NewComponent) {
+      // Prevent proxy cycles
+      const existingProxy = findProxy(NewComponent);
+      if (existingProxy) {
+        return ;
+      }
+
       newComponent = NewComponent
       newComponentInstance = mount(<NewComponent />).get(0)
+
+      // Set initial state for newly mounted component
       if (proxyInstance && proxyInstance.state) {
         newComponentInstance.setState(proxyInstance.state)
       }
     }
   }
+
+  addProxy(ProxyComponent, proxy);
+
+  return proxy;
 }
 
 function createFallback(Component) {
