@@ -15,11 +15,10 @@ module.exports = {
       commonjs: 'react',
       amd: 'react',
     },
-    jsdom: 'window',
-    cheerio: 'window',
+    'cheerio': 'window',
+    'react/addons': true,
     'react/lib/ExecutionEnvironment': true,
-    'react/lib/ReactContext': 'window',
-    'text-encoding': 'window'
+    'react/lib/ReactContext': true
   }],
   module: {
     loaders: [
