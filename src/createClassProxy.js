@@ -72,7 +72,9 @@ function proxyClass(Component) {
           const reactInternals = [
             'state',
             'setState',
-            '_reactInternalInstance'
+            '_reactInternalInstance',
+            'updater',
+            'getChildContext'
           ]
 
           const reactLifecycleMethods = [
@@ -109,7 +111,9 @@ function proxyClass(Component) {
         }
       })
 
-      proxyInstance = tempInstance
+      if (!proxyInstance) {
+        proxyInstance = tempInstance
+      }
 
       return tempInstance;
     },
