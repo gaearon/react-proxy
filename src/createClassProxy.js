@@ -70,12 +70,9 @@ function proxyClass(Component) {
         get(target, propKey, receiver) {
 
           const reactInternals = [
-            'updater',
             'state',
             'setState',
-            '_reactInternalInstance',
-            'context',
-            'getChildContext'
+            '_reactInternalInstance'
           ]
 
           const reactLifecycleMethods = [

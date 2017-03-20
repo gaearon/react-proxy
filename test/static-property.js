@@ -53,6 +53,12 @@ function createModernFixtures() {
     static childContextTypes = {
       something: React.PropTypes.number
     };
+
+    render() {
+      return (
+        <span>PropTypes</span>
+      );
+    }
   }
 
   class PropTypesUpdate extends Component {
@@ -67,6 +73,12 @@ function createModernFixtures() {
     static childContextTypes = {
       something: React.PropTypes.string
     };
+
+    render() {
+      return (
+        <span>PropTypesUpdate</span>
+      );
+    }
   }
 
   return {
@@ -121,7 +133,11 @@ function createClassicFixtures() {
   });
 
   const PropTypes = React.createClass({
-    render() {},
+    render() {
+      return (
+        <span>PropTypes</span>
+      );
+    },
 
     propTypes: {
       something: React.PropTypes.number
@@ -137,7 +153,11 @@ function createClassicFixtures() {
   });
 
   const PropTypesUpdate = React.createClass({
-    render() {},
+    render() {
+      return (
+        <span>PropTypesUpdate</span>
+      );
+    },
 
     propTypes: {
       something: React.PropTypes.string
@@ -252,19 +272,19 @@ describe('static property', () => {
       renderer.render(<Proxy />);
       expect(renderer.getRenderOutput().props.children).toEqual([100, 100]);
       expect(StaticProperty.answer).toEqual(100);
-      expect(Proxy.answer).toEqual(42); // Proxy gets synced on update()
+      expect(Proxy.answer).toEqual(100);
 
       proxy.update(StaticPropertyUpdate);
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual([100, 100]);
-      expect(StaticPropertyUpdate.answer).toEqual(100);
-      expect(Proxy.answer).toEqual(100);
+      expect(renderer.getRenderOutput().props.children).toEqual([43, 43]);
+      expect(StaticPropertyUpdate.answer).toEqual(43);
+      expect(Proxy.answer).toEqual(43);
 
       proxy.update(StaticPropertyRemoval);
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual([100, 100]);
-      expect(StaticPropertyRemoval.answer).toEqual(100);
-      expect(Proxy.answer).toEqual(100);
+      expect(renderer.getRenderOutput().props.children).toEqual([undefined, undefined]);
+      expect(StaticPropertyRemoval.answer).toEqual(undefined);
+      expect(Proxy.answer).toEqual(undefined);
     });
 
     it('is not changed when reassigned on initial class (undeclared)', () => {
@@ -276,19 +296,19 @@ describe('static property', () => {
       StaticPropertyRemoval.answer = 100;
       renderer.render(<Proxy />);
       expect(renderer.getRenderOutput().props.children).toEqual([100, 100]);
-      expect(Proxy.answer).toEqual(undefined); // Proxy gets synced on update()
+      expect(Proxy.answer).toEqual(100);
 
       proxy.update(StaticPropertyUpdate);
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual([100, 100]);
-      expect(StaticPropertyUpdate.answer).toEqual(100);
-      expect(Proxy.answer).toEqual(100);
+      expect(renderer.getRenderOutput().props.children).toEqual([43, 43]);
+      expect(StaticPropertyUpdate.answer).toEqual(43);
+      expect(Proxy.answer).toEqual(43);
 
       proxy.update(StaticProperty);
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual([100, 100]);
-      expect(StaticPropertyRemoval.answer).toEqual(100);
-      expect(Proxy.answer).toEqual(100);
+      expect(renderer.getRenderOutput().props.children).toEqual([42, 42]);
+      expect(StaticProperty.answer).toEqual(42);
+      expect(Proxy.answer).toEqual(42);
     });
   }
 
