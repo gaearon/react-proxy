@@ -53,6 +53,7 @@ function proxyClass(Component) {
   // Prevent double wrapping
   // Given a proxy class, return the existing proxy managing it
   const existingProxy = findProxy(Component);
+
   if (existingProxy) {
     return existingProxy;
   }
@@ -74,7 +75,7 @@ function proxyClass(Component) {
             'setState',
             '_reactInternalInstance',
             'updater',
-            'getChildContext'
+            'props'
           ]
 
           const reactLifecycleMethods = [
@@ -138,16 +139,27 @@ function proxyClass(Component) {
       }
 
       newComponent = NewComponent
-      newComponentInstance = mount(<NewComponent />).get(0)
+      if (newComponent.prototype.isReactComponent) {
+        // Set initial state for newly mounted component
+        if (proxyInstance) {
 
-      // Set initial state for newly mounted component
-      if (proxyInstance && proxyInstance.state) {
-        newComponentInstance.setState(proxyInstance.state)
+          // Get props from proxy to prevent undefined variables in render()
+          const { props } = proxyInstance
+
+          newComponentInstance = mount(
+            <NewComponent {...props}/>,
+            { context: proxyInstance.context }
+          ).get(0)
+
+          if (proxyInstance.state) {
+            newComponentInstance.setState(proxyInstance.state)
+          }
+        }
       }
     }
   }
 
-  addProxy(ProxyComponent, proxy);
+  addProxy(Component, proxy);
 
   return proxy;
 }
