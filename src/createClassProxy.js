@@ -4,7 +4,7 @@ import bindAutoBindMethods from './bindAutoBindMethods';
 import deleteUnknownAutoBindMethods from './deleteUnknownAutoBindMethods';
 import supportsProtoAssignment from './supportsProtoAssignment';
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 
 const RESERVED_STATICS = [
   'length',
@@ -75,6 +75,9 @@ function proxyClass(Component) {
             'setState',
             '_reactInternalInstance',
             'updater',
+            'context',
+            'constructor',
+            'selector',
             'props'
           ]
 
@@ -144,15 +147,15 @@ function proxyClass(Component) {
         if (proxyInstance) {
 
           // Get props from proxy to prevent undefined variables in render()
-          const { props } = proxyInstance
+          const { context, props, state } = proxyInstance
 
-          newComponentInstance = mount(
-            <NewComponent {...props}/>,
-            { context: proxyInstance.context }
-          ).get(0)
+          newComponentInstance = shallow(
+            <NewComponent {...props} />,
+            { context }
+          ).instance()
 
-          if (proxyInstance.state) {
-            newComponentInstance.setState(proxyInstance.state)
+          if (state) {
+            newComponentInstance.setState(state)
           }
         }
       }
