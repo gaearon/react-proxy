@@ -75,8 +75,9 @@ function proxyClass(Component) {
             'context',
             'constructor',
             'selector',
-            'props'
-          ]
+            'props',
+            'didUnmount'
+          ] // Can we get those automatically?
 
           const reactLifecycleMethods = [
             'shouldComponentUpdate',
@@ -85,11 +86,9 @@ function proxyClass(Component) {
           ]
 
           if (newComponentInstance) {
-
-            if (!reactInternals.includes(propKey)) {
-
-              if (!reactLifecycleMethods.includes(propKey)) {
-
+            if (reactInternals.includes(propKey) || reactLifecycleMethods.includes(propKey)) {
+              return Reflect.get(target, propKey, receiver);
+            }
                 const originalComponentWillUpdate = newComponentInstance.componentWillUpdate
                 newComponentInstance.componentWillUpdate = function(nextProps, nextState) {
                   proxyInstance.setState(nextState)
@@ -100,14 +99,6 @@ function proxyClass(Component) {
 
                 return Reflect.get(newComponentInstance, propKey, receiver);
               }
-
-              return Reflect.get(target, propKey, receiver);
-            } else {
-              return Reflect.get(target, propKey, receiver);
-            }
-
-          }
-
           return Reflect.get(target, propKey, receiver);
         }
       })
