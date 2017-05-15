@@ -1,7 +1,4 @@
 import find from 'lodash/find';
-import createPrototypeProxy from './createPrototypeProxy';
-import bindAutoBindMethods from './bindAutoBindMethods';
-import deleteUnknownAutoBindMethods from './deleteUnknownAutoBindMethods';
 import supportsProtoAssignment from './supportsProtoAssignment';
 import React from 'react';
 import { shallow } from 'enzyme';
