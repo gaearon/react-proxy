@@ -39,7 +39,7 @@ function getDisplayName(Component) {
 // https://github.com/gaearon/react-proxy/issues/50#issuecomment-192928066
 let allProxies = [];
 function findProxy(Component) {
-  const pair = find(allProxies, ([key]) => key === Component);
+  const pair = find(allProxies, ([key, wrapper]) => key === Component || Component === wrapper.get());
   return pair ? pair[1] : null;
 }
 function addProxy(Component, proxy) {
