@@ -71,12 +71,12 @@ describe('inheritance', () => {
       const derivedProxy = createProxy(Derived);
       const DerivedProxy = derivedProxy.get();
 
-      const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      let instance = renderer.render(<DerivedProxy />);
+      expect(instance.props().children).toEqual(420);
 
       baseProxy.update(Base2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(430);
+      instance.update();
+      expect(instance.props().children).toEqual(430);
     });
 
     it('replaces a base static method with proxied base and derived', () => {
@@ -93,11 +93,11 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       baseProxy.update(Base2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(430);
+      instance.update();
+      expect(instance.props().children).toEqual(430);
     });
 
     it('replaces a base instance method with proxied base only', () => {
@@ -111,11 +111,11 @@ describe('inheritance', () => {
       }
 
       const instance = renderer.render(<Derived />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       baseProxy.update(Base2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(430);
+      instance.update();
+      expect(instance.props().children).toEqual(430);
     });
 
     it('replaces a base static method with proxied base only', () => {
@@ -129,11 +129,11 @@ describe('inheritance', () => {
       }
 
       const instance = renderer.render(<Derived />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       baseProxy.update(Base2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(430);
+      instance.update();
+      expect(instance.props().children).toEqual(430);
     });
 
     it('replaces a derived instance method with proxied base and derived', () => {
@@ -156,11 +156,11 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       derivedProxy.update(Derived2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(4200);
+      instance.update();
+      expect(instance.props().children).toEqual(4200);
     });
 
     it('replaces a derived static method with proxied base and derived', () => {
@@ -183,11 +183,11 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       derivedProxy.update(Derived2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(4200);
+      instance.update();
+      expect(instance.props().children).toEqual(4200);
     });
 
     it('replaces a derived instance method with proxied derived only', () => {
@@ -207,11 +207,11 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       derivedProxy.update(Derived2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(4200);
+      instance.update();
+      expect(instance.props().children).toEqual(4200);
     });
 
     it('replaces a derived static method with proxied derived only', () => {
@@ -231,11 +231,11 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(420);
+      expect(instance.props().children).toEqual(420);
 
       derivedProxy.update(Derived2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual(4200);
+      instance.update();
+      expect(instance.props().children).toEqual(4200);
     });
 
     it('replaces any instance method with proxied base, middle and derived', () => {
@@ -273,31 +273,31 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual('420 lol');
+      expect(instance.props().children).toEqual('420 lol');
 
       baseProxy.update(Base2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('430 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('430 lol');
 
       middleProxy.update(Middle2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('4300 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('4300 lol');
 
       derivedProxy.update(Derived2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('4300 nice');
+      instance.update();
+      expect(instance.props().children).toEqual('4300 nice');
 
       derivedProxy.update(Derived1);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('4300 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('4300 lol');
 
       middleProxy.update(Middle1);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('430 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('430 lol');
 
       baseProxy.update(Base1);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('420 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('420 lol');
     });
 
     it('replaces any static method with proxied base, middle and derived', () => {
@@ -335,19 +335,19 @@ describe('inheritance', () => {
       const DerivedProxy = derivedProxy.get();
 
       const instance = renderer.render(<DerivedProxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual('420 lol');
+      expect(instance.props().children).toEqual('420 lol');
 
       baseProxy.update(Base2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('430 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('430 lol');
 
       middleProxy.update(Middle2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('4300 lol');
+      instance.update();
+      expect(instance.props().children).toEqual('4300 lol');
 
       derivedProxy.update(Derived2);
-      instance.forceUpdate();
-      expect(renderer.getRenderOutput().props.children).toEqual('4300 nice');
+      instance.update();
+      expect(instance.props().children).toEqual('4300 nice');
     });
   });
 });
