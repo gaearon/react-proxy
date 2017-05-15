@@ -115,7 +115,14 @@ function proxyClass(Component) {
         return Reflect.get(newComponent, propKey, receiver);
       }
       return Reflect.get(target, propKey, receiver);
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      if (newComponent) {
+        return Reflect.getOwnPropertyDescriptor(newComponent, prop);
     }
+      return Reflect.getOwnPropertyDescriptor(target, prop);
+    }
+
   });
 
   const proxy = {
