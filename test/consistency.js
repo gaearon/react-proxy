@@ -215,7 +215,7 @@ describe('consistency', () => {
       const Proxy = proxy.get();
 
       // expect(Proxy.name).toEqual('Foo');
-      expect(Proxy.displayName).tfoEqual('Foo (Custom)');
+      expect(Proxy.displayName).toEqual('Foo (Custom)');
 
       proxy.update(Baz);
       // expect(Proxy.name).toEqual('Baz');
@@ -261,7 +261,7 @@ describe('consistency', () => {
       });
     });
 
-    xit('[why is the test important?] preserves toString() of methods', () => {
+    xit('[to be resolved] preserves toString() of methods', () => {
       let proxy = createProxy(Bar);
 
       const Proxy = proxy.get();
@@ -315,7 +315,7 @@ describe('consistency', () => {
         expect(() => {
           const proxy = createProxy(Bar);
           const Proxy = proxy.get();
-          // const barInstance = renderer.render(<Proxy />);
+          const barInstance = renderer.render(<Proxy />);
           expect(barInstance.constructor).toEqual(Bar);
         }).toNotThrow();
       } finally {

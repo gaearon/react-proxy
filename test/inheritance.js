@@ -71,7 +71,7 @@ describe('inheritance', () => {
       const derivedProxy = createProxy(Derived);
       const DerivedProxy = derivedProxy.get();
 
-      let instance = renderer.render(<DerivedProxy />);
+      const instance = renderer.render(<DerivedProxy />);
       expect(instance.props().children).toEqual(420);
 
       baseProxy.update(Base2);
