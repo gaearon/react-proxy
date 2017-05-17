@@ -112,30 +112,30 @@ describe('instance arrow function property', () => {
       const proxy = createProxy(CounterWithoutIncrementMethod);
       const Proxy = proxy.get();
       const instance = renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      expect(instance.props().children).toEqual(0);
 
       proxy.update(Counter1x);
-      instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      instance.getNode().increment();
+      expect(instance.props().children).toEqual(1);
     });
 
     it('gets replaced', () => {
       const proxy = createProxy(Counter1x);
       const Proxy = proxy.get();
       const instance = renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      expect(instance.props().children).toEqual(0);
       instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
 
       proxy.update(Counter10x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(11);
+      expect(instance.props().children).toEqual(11);
 
       proxy.update(Counter100x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(111);
+      expect(instance.props().children).toEqual(111);
     });
 
     it('gets replaced if bound by assignment', () => {
@@ -151,19 +151,19 @@ describe('instance arrow function property', () => {
       expect(localWarnSpy.calls.length).toBe(shouldWarnOnBind ? 1 : 0);
       localWarnSpy.destroy();
 
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      expect(instance.props().children).toEqual(0);
       instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
 
       proxy.update(Counter10x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(11);
+      expect(instance.props().children).toEqual(11);
 
       proxy.update(Counter100x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(111);
+      expect(instance.props().children).toEqual(111);
     });
 
     it('gets replaced if bound by redefinition', () => {
@@ -181,19 +181,19 @@ describe('instance arrow function property', () => {
       expect(localWarnSpy.calls.length).toBe(shouldWarnOnBind ? 1 : 0);
       localWarnSpy.destroy();
 
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      expect(instance.props().children).toEqual(0);
       instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
 
       proxy.update(Counter10x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(11);
+      expect(instance.props().children).toEqual(11);
 
       proxy.update(Counter100x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(111);
+      expect(instance.props().children).toEqual(111);
     });
 
     /**
@@ -204,16 +204,16 @@ describe('instance arrow function property', () => {
       const proxy = createProxy(Counter1x);
       const Proxy = proxy.get();
       const instance = renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      expect(instance.props().children).toEqual(0);
       instance.increment();
       const savedIncrement = instance.increment;
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
 
       proxy.update(CounterWithoutIncrementMethod);
       expect(instance.increment).toEqual(undefined);
       savedIncrement.call(instance);
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
     });
 
     it('is attached and acts as a no-op if reassigned and deleted', () => {
@@ -226,14 +226,14 @@ describe('instance arrow function property', () => {
       // and instead actually performs the bind (which is being tested).
       instance.increment = instance.increment.bind(instance, 'lol');
 
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      expect(instance.props().children).toEqual(0);
       instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
 
       proxy.update(CounterWithoutIncrementMethod);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props().children).toEqual(1);
     });
   }
 

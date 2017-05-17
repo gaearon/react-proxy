@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import createShallowRenderer from './helpers/createShallowRenderer';
+import createReactClass from 'create-react-class';
+import { shallow } from 'enzyme';
 import expect from 'expect';
 import createProxy from '../src';
 
@@ -80,7 +81,7 @@ function createModernFixtures() {
 function createClassicFixtures() {
   const shouldWarnOnBind = true;
 
-  const Counter1x = React.createClass({
+  const Counter1x = createReactClass({
     getInitialState() {
       return { counter: 0 };
     },
@@ -96,7 +97,7 @@ function createClassicFixtures() {
     }
   });
 
-  const Counter10x = React.createClass({
+  const Counter10x = createReactClass({
     getInitialState() {
       return { counter: 0 };
     },
@@ -112,7 +113,7 @@ function createClassicFixtures() {
     }
   });
 
-  const Counter100x = React.createClass({
+  const Counter100x = createReactClass({
     getInitialState() {
       return { counter: 0 };
     },
@@ -128,7 +129,7 @@ function createClassicFixtures() {
     }
   });
 
-  const CounterWithoutIncrementMethod = React.createClass({
+  const CounterWithoutIncrementMethod = createReactClass({
     getInitialState() {
       return { counter: 0 };
     },
@@ -148,11 +149,11 @@ function createClassicFixtures() {
 };
 
 describe('instance method', () => {
-  let renderer;
+  let renderer = {};
+  renderer.render = shallow;
   let warnSpy;
 
   beforeEach(() => {
-    renderer = createShallowRenderer();
     warnSpy = expect.spyOn(console, 'error').andCallThrough();
   });
 
@@ -181,31 +182,32 @@ describe('instance method', () => {
     it('gets added', () => {
       const proxy = createProxy(CounterWithoutIncrementMethod);
       const Proxy = proxy.get();
-      const instance = renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      const instance = renderer.render(<Proxy />).instance();
+      expect(instance.props.children).toEqual(0);
 
       proxy.update(Counter1x);
       instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(instance.props.children).toEqual(1);
     });
 
     it('gets replaced', () => {
       const proxy = createProxy(Counter1x);
       const Proxy = proxy.get();
-      const instance = renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(0);
+      const wrapper = renderer.render(<Proxy />);
+      const instance = wrapper.instance()
+      expect(wrapper.props().children).toEqual(0);
       instance.increment();
-      expect(renderer.getRenderOutput().props.children).toEqual(1);
+      expect(wrapper.props().children).toEqual(1);
 
       proxy.update(Counter10x);
       instance.increment();
-      renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(11);
+      wrapper.render(<Proxy />);
+      expect(wrapper.props().children).toEqual(11);
 
       proxy.update(Counter100x);
       instance.increment();
       renderer.render(<Proxy />);
-      expect(renderer.getRenderOutput().props.children).toEqual(111);
+      expect(wrapper.props().children).toEqual(111);
     });
 
     it('gets replaced if bound by assignment', () => {
